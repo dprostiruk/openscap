@@ -1,0 +1,67 @@
+# goss.yaml — STIG-oriented Goss checks
+package:
+  auditd:
+    installed: true
+  openssh-server:
+    installed: true
+
+service:
+  ssh:
+    enabled: true
+    running: true
+  auditd:
+    enabled: true
+    running: true
+
+file:
+  /var/log/audit/audit.log:
+    exists: true
+    mode: "0640"
+  /etc/ssh/sshd_config:
+    exists: true
+    mode: "0644"
+  /etc/passwd:
+    exists: true
+    mode: "0644"
+  /etc/shadow:
+    exists: true
+    mode: "0400"
+
+cmd:
+  V-219185_audit_log_permissions:
+    exit-status: 0
+    stdout: |
+      $(test "$(stat -c %a /var/log/audit/audit.log 2>/dev/null)" = "640" && echo OK || echo FAIL)
+  V-238201_sshd_root_login_disabled:
+    exit-status: 0
+    stdout: |
+      $(grep -E '^\s*PermitRootLogin\s+no' /etc/ssh/sshd_config >/dev/null && echo OK || echo FAIL)
+  V-XXXXX_audit_enabled:
+    exit-status: 0
+    stdout: |
+      $(auditctl -s >/dev/null && echo OK || echo FAIL)
+
+user:
+  root:
+    exists: true
+    uid: 0
+
+group:
+  root:
+    exists: true
+    gid: 0
+
+port:
+  tcp:
+    22:
+      listening: true
+
+# files content checks (simple)
+file_content:
+  /etc/ssh/sshd_config:
+    contains:
+      - "PermitRootLogin no"
+      - "Protocol 2"
+  /etc/pam.d/common-password:
+    contains:
+      - "sha512"

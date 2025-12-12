@@ -1,0 +1,8 @@
+name: ubuntu-stig-profile
+title: Ubuntu STIG Basic Controls
+version: 0.1.0
+maintainer: You
+license: Apache-2.0
+summary: Basic STIG-aligned checks for Ubuntu 22.04
+supports:
+  - os-family: linux
